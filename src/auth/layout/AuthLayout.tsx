@@ -1,4 +1,5 @@
 import React from "react";
+import 'animate.css';
 
 export const AuthLayout = ({children, title}: {children: React.ReactNode, title: string}) => {
   return (
