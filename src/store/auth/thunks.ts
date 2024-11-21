@@ -3,6 +3,7 @@ import { AppDispatch } from "../store";
 import { checkingCredentials, login, logout } from "./authSlice"
 import { FirebaseAuth } from "../../firebase/config";
 import { FirebaseError } from "firebase/app";
+import { clearNotesLogout } from "../journal";
 
 
 export const checkingAuthentication = () => {
@@ -35,8 +36,6 @@ export const startCreatingUserWithEmailPassword = ({ email, password, name }: { 
 
         const {ok, uid, photoURL, errorMessage} = await registerUserWithEmailPassword({ email, password, name })
 
-        console.log(uid)
-        
         if (!ok) return dispatch(logout({ errorMessage }));
 
         dispatch(login({
@@ -76,7 +75,10 @@ export const startLogout = () => {
     return async (dispatch: AppDispatch) => {
         try {
             await logoutFirebase();
+
             dispatch(logout({ errorMessage: '' }));
+
+            dispatch(clearNotesLogout());
             
         } catch (error) {
             if (error instanceof FirebaseError) {

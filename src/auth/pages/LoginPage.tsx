@@ -2,32 +2,45 @@ import { FaGoogle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
 import { useForm } from "../../hooks";
-import { useDispatch } from "react-redux";
 import {
-  checkingAuthentication,
   startGoogleSignIn,
   startLoginWithEmailPassword,
 } from "../../store/auth";
-import { AppDispatch } from "../../store";
-import { useMemo } from "react";
+import { useAppDispatch } from "../../store";
+import { useMemo, useState } from "react";
 import { useAppSelector } from "../../store/auth/hook";
-import 'animate.css';
+import "animate.css";
+
+
+
+const formValidations = [{
+  email: [(value: string) => value.includes("@"), "El correo no es valido"],
+  password: [
+    (value: string) => value.length >= 6,
+    "El password debe de tener mas de 6 caracteres",
+  ],
+}];
+
+const formData = {
+  email: "",
+  password: "",
+};
 
 export const LoginPage = () => {
   const { status, errorMessage } = useAppSelector((state) => state.auth);
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
 
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
-  const { email, password, onInputChange } = useForm({
-    email: "gonzalobuasso@gmail.com",
-    password: "123456789",
-  });
+  const { email, password, onInputChange, isFormValid } = useForm(formData, formValidations);
 
   const isAuthenticated = useMemo(() => status === "authenticated", [status]);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setFormSubmitted(true);
 
+    if (!isFormValid) return;
     dispatch(startLoginWithEmailPassword({ email, password }));
   };
 
@@ -37,7 +50,17 @@ export const LoginPage = () => {
 
   return (
     <AuthLayout title={"Login"}>
-      <form onSubmit={onSubmit} className="animate__animated animate__fadeIn animate__faster">
+      <form
+        onSubmit={onSubmit}
+        className="animate__animated animate__fadeIn animate__faster"
+      >
+
+        <div>
+          {
+            isFormValid ? null : <p className="text-red-500 text-sm">Formulario no válido</p>
+          }
+
+        </div>
         <div className="flex flex-col gap-2">
           <input
             type="text"

@@ -42,7 +42,6 @@ export const registerUserWithEmailPassword = async ({ email, password, name }: {
 
         const resp = await createUserWithEmailAndPassword(FirebaseAuth, email, password);
         const { uid, photoURL } = resp.user;
-        console.log(resp.user)
 
         if (!FirebaseAuth.currentUser) return { ok: false, errorMessage: "Error en el registro con email y password" };
 

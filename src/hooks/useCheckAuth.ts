@@ -1,20 +1,19 @@
-import { useDispatch } from "react-redux";
 import { useAppSelector } from "../store/auth/hook";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 import { login, logout } from "../store/auth";
 import { FirebaseAuth } from "../firebase/config";
+import { startLoadingNotes, useAppDispatch } from "../store";
 
 export const useCheckAuth = () => {
 
     const { status } = useAppSelector((state) => state.auth)
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
 
         onAuthStateChanged(FirebaseAuth, async (user) => {
-            console.log(user)
-            if (!user) return dispatch(logout({ errorMessage: 'No hay usuario' }));
+            if (!user) return dispatch(logout({ errorMessage: '' }));
 
             dispatch(login({
                 uid: user.uid,
@@ -22,7 +21,9 @@ export const useCheckAuth = () => {
                 displayName: user.displayName,
                 photoUrl: user.photoURL,
                 errorMessage: ''
-            }))
+            }));
+
+            dispatch(startLoadingNotes());
 
         })
 

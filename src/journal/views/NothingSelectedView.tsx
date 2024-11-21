@@ -2,7 +2,7 @@ import { FaRegStar } from "react-icons/fa";
 
 export const NothingSelectedView = () => {
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-violet-800 p-2">
+    <div className="flex flex-col justify-center items-center h-screen bg-violet-800 p-2 animate__animated animate__fadeIn animate__faster">
       <FaRegStar className="text-6xl text-white" />
 
       <h6 className="text-white mt-4">Selecciona o crea una nota</h6>

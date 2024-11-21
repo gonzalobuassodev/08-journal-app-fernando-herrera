@@ -2,18 +2,18 @@ import { Link } from "react-router-dom";
 import { AuthLayout } from "../layout/AuthLayout";
 import { useForm } from "../../hooks";
 import { useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
 import { startCreatingUserWithEmailPassword } from "../../store/auth";
 import { useAppSelector } from "../../store/auth/hook";
 import 'animate.css';
+import { useAppDispatch } from "../../store";
 
 const formData = {
-  name: "Martin",
-  email: "martin@gmail.com",
-  password: "123456",
+  name: "",
+  email: "",
+  password: "",
 };
 
-const formValidations = {
+const formValidations = [{
   email: [(value: string) => value.includes("@"), "El correo no es valido"],
   password: [
     (value: string) => value.length >= 6,
@@ -23,17 +23,19 @@ const formValidations = {
     (value: string) => value.length >= 3,
     "El nombre debe de tener mas de 3 caracteres",
   ],
-};
+}];
 
 export const RegisterPage = () => {
   const { status, errorMessage } = useAppSelector((state) => state.auth);
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
+
+  const dispatch = useAppDispatch();
 
   const isCheckingAuthentication = useMemo(
     () => status === "checking",
     [status]
   );
 
-  const dispatch = useDispatch();
   const {
     formState,
     name,
@@ -46,7 +48,6 @@ export const RegisterPage = () => {
     passwordValid,
   } = useForm(formData, formValidations);
 
-  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,9 +55,9 @@ export const RegisterPage = () => {
     if (!isFormValid) return;
 
     dispatch(startCreatingUserWithEmailPassword({
-      email: 'gonzalobuasso@gmail.com',
-      password: 'password', 
-      name: ''
+      email,
+      password, 
+      name
     }));
   };
 

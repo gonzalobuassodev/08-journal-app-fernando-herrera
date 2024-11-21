@@ -1,26 +1,20 @@
 import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 
-interface Values {
-    name?: string;
-    email: string;
-    password: string;
-}
+type FieldValues = Record<string, any>;
 
-const initialValues: Values = {
-    name: '',
-    email: '',
-    password: '',
-};
+export const useForm = <T extends FieldValues>(initialForm: T, formValidations?: [T]) => {
+    const [formState, setFormState] = useState(initialForm as T);
+    const [formValidation, setFormValidation] = useState({} as T);
 
-export const useForm = (initialForm: Values, formValidations: any = {}) => {
-    const [formState, setFormState] = useState<Values>(initialForm);
-    const [formValidation, setFormValidation] = useState({})
+    useEffect(() => {
+        setFormState(initialForm);
+    }, [initialForm])
 
     useEffect(() => {
 
-        createValidators();
-
-    }, [formState])
+        if (formValidations !== undefined) createValidators();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formState, formValidations])
 
     const isFormValid = useMemo(() => {
 
@@ -31,7 +25,7 @@ export const useForm = (initialForm: Values, formValidations: any = {}) => {
         return true;
     }, [formValidation])
 
-    const onInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const onInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormState({
             ...formState,
@@ -40,27 +34,26 @@ export const useForm = (initialForm: Values, formValidations: any = {}) => {
     };
 
     const onResetForm = () => {
-        setFormState(
-            initialValues);
+        // setFormState(
+        //     initialValues);
     };
 
-    const createValidators = () => {
-        
-        const formCheckedValues = {};
+    const createValidators =() => {
 
-        for (const formField of Object.keys(formValidations)) {
+        if (formValidations === undefined) return;
 
-            const [fn, errorMessage = 'Este campo es requerido'] = formValidations[formField]
+        const formCheckedValues = {} as T;
 
-            formCheckedValues[`${formField}Valid`] = fn(formState[formField]) ? null : errorMessage;
+        for (const formField of Object.keys(formValidations[0])) {
+            const [fn, errorMessage = 'Este campo es requerido'] = formValidations[0][formField] || [];
 
+            if (fn) {
+                formCheckedValues[`${formField}Valid`] = fn(formState[formField]) ? null : errorMessage;
+            }
         }
 
         setFormValidation(formCheckedValues);
-
-        // console.log(formCheckedValues)
-
-    }
+    };
 
     return {
         ...formState,

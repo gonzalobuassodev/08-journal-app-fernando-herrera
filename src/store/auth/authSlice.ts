@@ -44,6 +44,10 @@ export const authSlice = createSlice({
         }
     },
 })
-export const { login, logout, checkingCredentials } = authSlice.actions
+export const { 
+    checkingCredentials,
+    login, 
+    logout, 
+} = authSlice.actions
 
 // export default counterSlice.reducer
